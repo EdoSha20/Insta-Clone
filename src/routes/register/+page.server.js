@@ -1,93 +1,59 @@
 import { fail, redirect } from '@sveltejs/kit';
-
 import pool from '$lib/server/db';
-
-import {
-    hashPassword,
-    createSession
-} from '$lib/server/auth';
-
+import { hashPassword, createSession } from '$lib/server/auth';
 
 export const actions = {
+	register: async ({ request, cookies }) => {
+		const formData = await request.formData();
 
-    register: async ({ request, cookies }) => {
+		const username = formData.get('username');
+		const email = formData.get('email');
+		const password = formData.get('password');
 
-        // Formulardaten holen
-        const formData = await request.formData();
+		if (!username || !email || !password) {
+			return fail(400, {
+				error: 'Alle Felder sind erforderlich'
+			});
+		}
 
-        const username = formData.get('username');
-        const email = formData.get('email');
-        const password = formData.get('password');
+		let result;
 
+		try {
+			const hashedPassword = await hashPassword(password);
 
-        // Validierung
-        if (!username || !email || !password) {
+			const [res] = await pool.execute(
+				`
+				INSERT INTO users
+				(username, email, password, role)
+				VALUES (?, ?, ?, ?)
+				`,
+				[username, email, hashedPassword, 'user']
+			);
 
-            return fail(400, {
-                error: 'Alle Felder sind erforderlich'
-            });
+			result = res;
 
-        }
+		} catch (err) {
+			if (err?.code === 'ER_DUP_ENTRY') {
+				return fail(400, {
+					error: 'Username oder Email existiert bereits'
+				});
+			}
 
+			return fail(500, {
+				error: 'Serverfehler'
+			});
+		}
 
-        let result;
+		const sessionId = await createSession(result.insertId);
 
-        try {
+		cookies.set('session', sessionId, {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'lax',
+			secure: false,
+			maxAge: 60 * 60 * 24 * 30
+		});
 
-            // Passwort hashen
-            const hashedPassword = await hashPassword(password);
-
-
-            // User speichern
-            [result] = await pool.execute(
-                `
-                INSERT INTO users
-                (username, email, password, role)
-                VALUES (?, ?, ?, ?)
-                `,
-                [
-                    username,
-                    email,
-                    hashedPassword,
-                    'user'
-                ]
-            );
-
-        } catch (error) {
-
-            // Username oder Email existiert bereits
-            if (error.code === 'ER_DUP_ENTRY') {
-
-                return fail(400, {
-                    error: 'Username oder Email existiert bereits'
-                });
-
-            }
-
-            return fail(500, {
-                error: 'Serverfehler'
-            });
-
-        }
-
-
-        // Session erstellen
-        const sessionId = await createSession(result.insertId);
-
-
-        // Cookie setzen
-        cookies.set('session', sessionId, {
-            path: '/',
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: false, // auf Vercel später true
-            maxAge: 60 * 60 * 24 * 30 // 30 Tage
-        });
-
-
-        // Weiterleitung
-        throw redirect(303, '/');
-
-    }
-
+		throw redirect(303, '/');
+	}
 };

@@ -1,69 +1,65 @@
-import pool from './db.js';
+import pool from '$lib/server/db.js';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 
-
 // Passwort hashen
 export async function hashPassword(password) {
-    return bcrypt.hash(password, 10);
+	return bcrypt.hash(password, 10);
 }
 
-
-// Passwort überprüfen
+// Passwort prüfen
 export async function verifyPassword(password, hash) {
-    return bcrypt.compare(password, hash);
+	return bcrypt.compare(password, hash);
 }
-
 
 // Session erstellen
 export async function createSession(userId) {
+	const sessionId = randomUUID();
 
-    const sessionId = randomUUID();
+	const expiresAt = new Date(
+		Date.now() + 30 * 24 * 60 * 60 * 1000
+	);
 
-    // 30 Tage gültig
-    const expiresAt = new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
-    );
+	await pool.execute(
+		`
+		INSERT INTO sessions (id, user_id, expires_at)
+		VALUES (?, ?, ?)
+		`,
+		[sessionId, userId, expiresAt]
+	);
 
-    await pool.execute(
-        `
-        INSERT INTO sessions (id, user_id, expires_at)
-        VALUES (?, ?, ?)
-        `,
-        [sessionId, userId, expiresAt]
-    );
-
-    return sessionId;
+	return sessionId;
 }
 
-
-// Session überprüfen
+// Session prüfen
 export async function validateSession(sessionId) {
+	const [rows] = await pool.execute(
+		`
+		SELECT 
+			s.user_id,
+			u.username,
+			u.role
+		FROM sessions s
+		JOIN users u ON s.user_id = u.id
+		WHERE s.id = ?
+		AND s.expires_at > NOW()
+		`,
+		[sessionId]
+	);
 
-    const [rows] = await pool.execute(
-        `
-        SELECT 
-            s.user_id,
-            u.username,
-            u.role
-        FROM sessions s
-        JOIN users u
-        ON s.user_id = u.id
-        WHERE s.id = ?
-        AND s.expires_at > NOW()
-        `,
-        [sessionId]
-    );
-
-    return rows[0] ?? null;
+	return rows[0]
+		? {
+			id: rows[0].user_id,
+			username: rows[0].username,
+			role: rows[0].role
+		}
+		: null;
 }
 
-
-// Session löschen (Logout)
+// Logout
 export async function invalidateSession(sessionId) {
-
-    await pool.execute(
-        'DELETE FROM sessions WHERE id = ?',
-        [sessionId]
-    );
+	await pool.execute(
+		'DELETE FROM sessions WHERE id = ?',
+		[sessionId]
+	);
 }
