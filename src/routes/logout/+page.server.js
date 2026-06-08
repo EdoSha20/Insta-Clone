@@ -19,4 +19,4 @@ export const actions = {
 		// Zur Startseite weiterleiten
 		throw redirect(303, '/');
 	}
-};
+}; 

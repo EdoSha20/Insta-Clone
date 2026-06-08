@@ -22,7 +22,7 @@ export async function load({ params }) {
 		SELECT 
 			i.id,
 			i.image,
-			i.description,
+			i.description, 
 			i.votes,
 			i.created_at
 		FROM images i

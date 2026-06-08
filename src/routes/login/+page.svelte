@@ -20,7 +20,7 @@
 			<span class="text-lg font-bold tracking-tight">
 				insta<span class="text-[#A855F7]">vibe</span>
 			</span>
-		</div>
+		</div> 
 
 		<h1 class="text-[26px] font-bold tracking-tight leading-tight mb-1">
 			Welcome <span class="text-[#A855F7]">back.</span>
