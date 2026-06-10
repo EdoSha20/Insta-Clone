@@ -1,5 +1,5 @@
 import db from '$lib/server/db.js';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { validateSession } from '$lib/server/auth.js';
 
 export async function load({ params, cookies }) {
@@ -9,6 +9,10 @@ export async function load({ params, cookies }) {
 
 	const sessionId = cookies.get('session');
 	const user = sessionId ? await validateSession(sessionId) : null;
+
+	if (!user) {
+	throw redirect(303, '/login');
+}
 
 	// IMAGE
 	const [images] = await db.execute(

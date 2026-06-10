@@ -16,27 +16,38 @@
 </svelte:head>
 
 <section class="min-h-screen bg-[#0A0A0A] text-white">
+<div class="flex justify-between items-center mb-6">
 
-	<div class="max-w-6xl mx-auto px-6 py-8">
+	<a
+		href={resolve('/')}
+		class="text-zinc-400 hover:text-white transition"
+	>
+		← Back to Home
+	</a>
 
-		<!-- NAVIGATION -->
-		<div class="flex justify-between items-center mb-6">
+	<div class="flex gap-3">
 
-			<a
-				href={resolve('/')}
-				class="text-zinc-400 hover:text-white transition"
+		<a
+			href={resolve('/dashboard')}
+			class="px-4 py-2 bg-[#7B2FBE] hover:bg-[#9333EA] rounded-xl font-medium transition"
+		>
+			📸 Dashboard
+		</a>
+
+		<form method="POST" action={resolve('/logout')}>
+
+			<button
+				type="submit"
+				class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-xl font-medium transition"
 			>
-				← Back to Home
-			</a>
+				Logout
+			</button>
 
-			<a
-				href={resolve('/dashboard')}
-				class="px-4 py-2 bg-[#7B2FBE] hover:bg-[#9333EA] rounded-xl font-medium transition"
-			>
-				📸 Upload Image
-			</a>
+		</form>
 
-		</div>
+	</div>
+
+</div>
 
 		<!-- PROFILE CARD -->
 		<div class="bg-[#111111] border border-[#222222] rounded-3xl p-8 mb-10">

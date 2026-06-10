@@ -2,6 +2,12 @@ import { fail, redirect } from '@sveltejs/kit';
 import pool from '$lib/server/db';
 import { hashPassword, createSession } from '$lib/server/auth';
 
+export async function load({ locals }) {
+	if (locals.user) {
+		throw redirect(303, `/profile/${locals.user.username}`);
+	}
+}
+
 export const actions = {
 	register: async ({ request, cookies }) => {
 		const formData = await request.formData();
@@ -31,7 +37,6 @@ export const actions = {
 			);
 
 			result = res;
-
 		} catch (err) {
 			if (err?.code === 'ER_DUP_ENTRY') {
 				return fail(400, {
@@ -54,6 +59,6 @@ export const actions = {
 			maxAge: 60 * 60 * 24 * 30
 		});
 
-		throw redirect(303, '/');
+		throw redirect(303, `/profile/${username}`);
 	}
 };

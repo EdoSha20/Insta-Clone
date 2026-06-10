@@ -45,22 +45,43 @@
 
 			</div>
 
-			<!-- AUTH -->
-			<div class="flex items-center gap-3">
+			{#if !data.user}
 
-				<a
-					href={resolve('/login')}
-					class="px-4 py-2 rounded-[10px] border border-[#222] bg-[#111111] text-[#aaa] hover:text-white hover:border-[#444] transition text-sm">
-					Login
-				</a>
+	<div class="flex items-center gap-3">
 
-				<a
-					href={resolve('/register')}
-					class="px-4 py-2 rounded-[10px] bg-[#7B2FBE] hover:bg-[#9333EA] text-white text-sm font-semibold transition">
-					Register
-				</a>
+		<a
+			href={resolve('/login')}
+			class="px-4 py-2 rounded-[10px] border border-[#222] bg-[#111111] text-[#aaa] hover:text-white hover:border-[#444] transition text-sm">
+			Login
+		</a>
 
-			</div>
+		<a
+			href={resolve('/register')}
+			class="px-4 py-2 rounded-[10px] bg-[#7B2FBE] hover:bg-[#9333EA] text-white text-sm font-semibold transition">
+			Register
+		</a>
+
+	</div>
+
+{:else}
+
+	<div class="flex items-center gap-3">
+
+		<a
+			href={resolve('/dashboard')}
+			class="px-4 py-2 rounded-[10px] bg-[#7B2FBE] hover:bg-[#9333EA] text-white text-sm font-semibold transition">
+			Dashboard
+		</a>
+
+		<a
+			href={resolve(`/profile/${data.user.username}`)}
+			class="px-4 py-2 rounded-[10px] border border-[#222] bg-[#111111] text-[#aaa] hover:text-white hover:border-[#444] transition text-sm">
+			Profile
+		</a>
+
+	</div>
+
+{/if}
 
 		</div>
 
@@ -126,7 +147,6 @@
 
 								<div class="flex items-center gap-1 bg-[#181818] border border-[#222] px-3 py-1 rounded-full">
 									<span class="text-[#A855F7] text-xs">♥</span>
-
 									<span class="text-xs font-semibold">
 										{img.votes}
 									</span>
