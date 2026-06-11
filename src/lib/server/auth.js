@@ -31,13 +31,14 @@ export async function createSession(userId) {
 	return sessionId;
 }
 
-// Session prüfen
+// Session prüfen (WICHTIG: EIN FORMAT!)
 export async function validateSession(sessionId) {
 	const [rows] = await pool.execute(
 		`
 		SELECT 
-			s.user_id,
+			u.id,
 			u.username,
+			u.email,
 			u.role
 		FROM sessions s
 		JOIN users u ON s.user_id = u.id
@@ -47,13 +48,7 @@ export async function validateSession(sessionId) {
 		[sessionId]
 	);
 
-	return rows[0]
-		? {
-			id: rows[0].user_id,
-			username: rows[0].username,
-			role: rows[0].role
-		}
-		: null;
+	return rows[0] ?? null;
 }
 
 // Logout

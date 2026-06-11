@@ -1,15 +1,20 @@
-import { validateSession } from '$lib/server/auth';
+import { validateSession } from '$lib/server/auth.js';
 
 export async function handle({ event, resolve }) {
+	const sessionId = event.cookies.get('session');
 
-    // Session-Cookie holen
-    const sessionId = event.cookies.get('session');
+	if (sessionId) {
+		const user = await validateSession(sessionId);
 
-    // User in locals speichern
-    event.locals.user = sessionId
-        ? await validateSession(sessionId)
-        : null;
+		if (!user) {
+			event.cookies.delete('session', { path: '/' });
+			event.locals.user = null;
+		} else {
+			event.locals.user = user;
+		}
+	} else {
+		event.locals.user = null;
+	}
 
-    // Anfrage weitergeben
-    return resolve(event);
+	return resolve(event);
 }

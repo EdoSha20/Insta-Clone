@@ -15,28 +15,61 @@
 
 	<div class="max-w-5xl mx-auto px-6 py-12">
 
-		<div class="mb-10">
-			<h1 class="text-4xl font-bold mb-2">
-				Dashboard
-			</h1>
+		<!-- HEADER -->
+		<div class="mb-10 flex items-center justify-between">
+			
+			<div>
+				<h1 class="text-4xl font-bold mb-2">
+					Dashboard
+				</h1>
 
-			<p class="text-[#666]">
-				Willkommen zurück, @{data.user.username}
-			</p>
+				<p class="text-[#666]">
+					Willkommen zurück, @{data.user.username}
+				</p>
+			</div>
+
+			<!-- NAV BUTTONS -->
+			<div class="flex gap-3">
+
+				<a
+					href={resolve(`/profile/${data.user.username}`)}
+					class="px-4 py-2 bg-[#222] hover:bg-[#333] rounded-xl text-sm"
+				>
+					← Profile
+				</a>
+
+				<a
+					href={resolve('/')}
+					class="px-4 py-2 bg-[#222] hover:bg-[#333] rounded-xl text-sm"
+				>
+					Home
+				</a>
+
+			</div>
 		</div>
 
+		<!-- ERROR -->
 		{#if form?.error}
 			<div class="mb-6 bg-red-950/50 border border-red-900 rounded-xl p-4 text-red-400">
 				{form.error}
 			</div>
 		{/if}
 
-		{#if form?.success}
+		<!-- SUCCESS: UPLOAD -->
+		{#if form?.success === 'uploaded'}
 			<div class="mb-6 bg-green-950/50 border border-green-900 rounded-xl p-4 text-green-400">
 				Image uploaded successfully ✓
 			</div>
 		{/if}
 
+		<!-- SUCCESS: DELETE -->
+		{#if form?.success === 'deleted'}
+			<div class="mb-6 bg-green-950/50 border border-green-900 rounded-xl p-4 text-green-400">
+				Image deleted successfully ✓
+			</div>
+		{/if}
+
+		<!-- UPLOAD -->
 		<section class="bg-[#111] border border-[#222] rounded-2xl p-6 mb-10">
 
 			<h2 class="text-xl font-bold mb-5">
@@ -59,21 +92,12 @@
 			>
 
 				<label
-					class="block border-2 border-dashed border-[#333] hover:border-[#7B2FBE]
-					rounded-2xl p-10 text-center cursor-pointer transition"
+					class="block border-2 border-dashed border-[#333]
+					hover:border-[#7B2FBE] rounded-2xl p-10 text-center cursor-pointer transition"
 				>
-
-					<div class="text-5xl mb-3">
-						📸
-					</div>
-
-					<p class="font-medium">
-						Choose an image
-					</p>
-
-					<p class="text-[#666] text-sm mt-1">
-						JPG, PNG, WEBP
-					</p>
+					<div class="text-5xl mb-3">📸</div>
+					<p class="font-medium">Choose an image</p>
+					<p class="text-[#666] text-sm mt-1">JPG, PNG, WEBP</p>
 
 					<input
 						type="file"
@@ -82,7 +106,6 @@
 						required
 						class="hidden"
 					/>
-
 				</label>
 
 				<textarea
@@ -104,9 +127,9 @@
 				</button>
 
 			</form>
-
 		</section>
 
+		<!-- IMAGES -->
 		<div class="flex items-center justify-between mb-6">
 
 			<h2 class="text-2xl font-bold">
@@ -122,15 +145,8 @@
 		{#if data.images.length === 0}
 
 			<div class="bg-[#111] border border-[#222] rounded-2xl p-16 text-center">
-
-				<div class="text-5xl mb-4">
-					📷
-				</div>
-
-				<p class="text-[#888]">
-					You haven't uploaded any images yet.
-				</p>
-
+				<div class="text-5xl mb-4">📷</div>
+				<p class="text-[#888]">You haven't uploaded any images yet.</p>
 			</div>
 
 		{:else}
@@ -139,10 +155,7 @@
 
 				{#each data.images as img (img.id)}
 
-					<div
-						class="group bg-[#111] border border-[#222]
-						rounded-2xl overflow-hidden"
-					>
+					<div class="group bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
 
 						<div class="relative">
 
@@ -152,11 +165,7 @@
 								class="w-full h-64 object-cover"
 							/>
 
-							<div
-								class="absolute top-3 right-3
-								bg-black/70 backdrop-blur-sm
-								rounded-full px-3 py-1 text-sm"
-							>
+							<div class="absolute top-3 right-3 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1 text-sm">
 								❤️ {img.votes}
 							</div>
 
@@ -172,29 +181,18 @@
 
 								<a
 									href={resolve(`/images/${img.id}`)}
-									data-sveltekit-reload
-									class="flex-1 text-center bg-[#222]
-									hover:bg-[#333] py-2 rounded-lg text-sm"
+									class="flex-1 text-center bg-[#222] hover:bg-[#333] py-2 rounded-lg text-sm"
 								>
 									View
 								</a>
 
-								<form
-									method="POST"
-									action="?/delete"
-									class="flex-1"
-								>
+								<form method="POST" action="?/delete" class="flex-1">
 
-									<input
-										type="hidden"
-										name="imageId"
-										value={img.id}
-									/>
+									<input type="hidden" name="imageId" value={img.id} />
 
 									<button
 										type="submit"
-										class="w-full bg-red-600 hover:bg-red-500
-										py-2 rounded-lg text-sm"
+										class="w-full bg-red-600 hover:bg-red-500 py-2 rounded-lg text-sm"
 									>
 										Delete
 									</button>

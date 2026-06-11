@@ -1,10 +1,15 @@
 import pool from '$lib/server/db';
 import { error } from '@sveltejs/kit';
+import { validateSession } from '$lib/server/auth.js';
 
-export async function load({ params }) {
+export async function load({ params, cookies }) {
 	const { username } = params;
 
-	// user holen
+	// SESSION CHECK (WICHTIG FÜR LOGIN/LOGOUT UI)
+	const sessionId = cookies.get('session');
+	const user = sessionId ? await validateSession(sessionId) : null;
+
+	// user holen (Profil Owner)
 	const [users] = await pool.execute(
 		'SELECT id, username, email, created_at FROM users WHERE username = ?',
 		[username]
@@ -14,7 +19,7 @@ export async function load({ params }) {
 		throw error(404, 'User not found');
 	}
 
-	const user = users[0];
+	const profileUser = users[0];
 
 	// images vom user holen
 	const [images] = await pool.execute(
@@ -29,11 +34,12 @@ export async function load({ params }) {
 		WHERE i.author_id = ?
 		ORDER BY i.created_at DESC
 		`,
-		[user.id]
+		[profileUser.id]
 	);
 
 	return {
-		profileUser: user,
-		images
+		profileUser,
+		images,
+		user
 	};
 }
