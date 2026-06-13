@@ -191,61 +191,81 @@
 								<div class="flex items-center gap-2">
 
 
-									<div class="flex items-center gap-1 bg-[#181818] border border-[#222] px-3 py-1 rounded-full">
+									{#if data.user}
 
-										<span class="text-[#A855F7] text-xs">
-											♥
-										</span>
+	<form method="POST" action="?/vote">
 
+		<input
+			type="hidden"
+			name="imageId"
+			value={img.id}
+		/>
 
-										<span class="text-xs font-semibold">
-											{img.votes}
-										</span>
+		<button
+			class="flex items-center gap-1 bg-[#181818] border border-[#222] px-3 py-1 rounded-full hover:border-[#7B2FBE] transition"
+		>
 
-									</div>
+			{#if data.votedIds.includes(img.id)}
+				<span class="text-[#A855F7] text-xs">♥</span>
+			{:else}
+				<span class="text-xs">♡</span>
+			{/if}
+
+			<span class="text-xs font-semibold">
+				{img.votes}
+			</span>
+
+		</button>
+
+	</form>
+
+{:else}
+
+	<div class="flex items-center gap-1 bg-[#181818] border border-[#222] px-3 py-1 rounded-full">
+
+		<span class="text-[#A855F7] text-xs">♥</span>
+
+		<span class="text-xs font-semibold">
+			{img.votes}
+		</span>
+
+	</div>
+
+{/if}
 
 
 
 									{#if data.user}
 
 
-										<form method="POST" action="?/save">
+									<form
+	method="POST"
+	action={data.savedIds.includes(img.id) ? '?/unsave' : '?/save'}
+>
 
-											<input 
-												type="hidden" 
-												name="imageId" 
-												value={img.id} 
-											/>
+	<input
+		type="hidden"
+		name="imageId"
+		value={img.id}
+	/>
 
+	<button
+		class="flex items-center gap-1 bg-[#181818] border border-[#222] px-3 py-1 rounded-full hover:border-[#7B2FBE] transition"
+	>
 
-											<button
-												class="bg-[#181818] border border-[#222] px-3 py-1 rounded-full text-xs hover:border-[#7B2FBE] transition">
+		{#if data.savedIds.includes(img.id)}
+			<span class="text-[#A855F7]">🔖</span>
+		{:else}
+			<span>📑</span>
+		{/if}
 
-												🔖
+		<span class="text-xs font-semibold">
+			{img.saves}
+		</span>
 
-											</button>
+	</button>
 
-										</form>
-
-
-
-										<form method="POST" action="?/unsave">
-
-											<input 
-												type="hidden" 
-												name="imageId" 
-												value={img.id} 
-											/>
-
-
-											<button
-												class="bg-[#181818] border border-[#222] px-3 py-1 rounded-full text-xs hover:border-[#7B2FBE] transition">
-
-												✕
-
-											</button>
-
-										</form>
+</form>
 
 
 									{/if}
