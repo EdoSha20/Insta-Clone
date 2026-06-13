@@ -22,14 +22,22 @@
 		<!-- HEADER -->
 		<div class="flex justify-between items-center mb-6">
 
-			<a
+		<a	
 				href={resolve('/')}
 				class="text-zinc-400 hover:text-white transition"
 			>
+
 				← Back to Home
 			</a>
 
 			<div class="flex gap-3">
+
+				<a
+					href={resolve('/saved')}
+					class="px-4 py-2 bg-[#222] hover:bg-[#333] rounded-xl font-medium transition"
+				>
+					🔖 Saved
+				</a>
 
 				<a
 					href={resolve('/dashboard')}
@@ -108,8 +116,8 @@
 			<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
 				{#each data.images as img (img.id)}
-
-					<a
+<a
+					
 						href={resolve(`/images/${img.id}`)}
 						class="group bg-[#111111] border border-[#222222] rounded-2xl overflow-hidden hover:border-[#7B2FBE]/50 transition"
 					>
