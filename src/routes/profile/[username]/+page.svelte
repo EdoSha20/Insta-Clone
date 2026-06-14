@@ -66,20 +66,60 @@
 
 				<div class="flex items-center gap-5">
 
-					<div class="w-20 h-20 rounded-2xl bg-[#7B2FBE] flex items-center justify-center text-3xl font-bold">
-						{data.profileUser.username[0].toUpperCase()}
-					</div>
+					{#if data.profileUser.avatar}
+
+	<img
+	src={data.profileUser.avatar}
+	alt={data.profileUser.username}
+	class="w-20 h-20 rounded-2xl object-cover border border-[#333]"
+/>
+{:else}
+
+	<div class="w-20 h-20 rounded-2xl bg-[#7B2FBE] flex items-center justify-center text-3xl font-bold">
+		{data.profileUser.username[0].toUpperCase()}
+	</div>
+
+{/if}
 
 					<div>
-						<h1 class="text-3xl font-bold">
-							@{data.profileUser.username}
-						</h1>
 
-						<p class="text-zinc-500 mt-1">
-							Member since {new Date(data.profileUser.created_at).toLocaleDateString()}
-						</p>
-					</div>
+	<h1 class="text-3xl font-bold">
+		@{data.profileUser.username}
+	</h1>
 
+	<p class="text-zinc-500 mt-1">
+		Member since {new Date(data.profileUser.created_at).toLocaleDateString()}
+	</p>
+
+	{#if data.user && data.user.id === data.profileUser.id}
+
+		<form
+			method="POST"
+			action="?/avatar"
+			enctype="multipart/form-data"
+			class="mt-4"
+		>
+
+			<input
+				type="file"
+				name="avatar"
+				accept="image/*"
+				required
+				class="text-sm"
+			/>
+
+			<button
+				type="submit"
+				class="mt-2 px-4 py-2 bg-[#7B2FBE] hover:bg-[#9333EA] rounded-xl text-sm font-medium transition"
+			>
+				Change Avatar
+			</button>
+
+		</form>
+
+	{/if}
+
+</div>
 				</div>
 
 				<div class="flex gap-8">

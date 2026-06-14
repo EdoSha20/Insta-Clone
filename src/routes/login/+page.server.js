@@ -57,7 +57,7 @@ export const actions = {
 			httpOnly: true,
 			sameSite: 'lax',
 			secure: false,
-			maxAge: 60 * 60 * 24 * 30
+			
 		});
 
 		throw redirect(303, `/profile/${user.username}`);
