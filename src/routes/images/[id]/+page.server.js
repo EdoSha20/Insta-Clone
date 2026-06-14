@@ -11,10 +11,9 @@ export async function load({ params, cookies }) {
 	const user = sessionId ? await validateSession(sessionId) : null;
 
 	if (!user) {
-	throw redirect(303, '/login');
-}
+		throw redirect(303, '/login');
+	}
 
-	// IMAGE
 	const [images] = await db.execute(
 		`
 		SELECT i.*, u.username AS author
@@ -27,7 +26,6 @@ export async function load({ params, cookies }) {
 
 	if (!images.length) throw error(404, 'Image not found');
 
-	// COMMENTS
 	const [comments] = await db.execute(
 		`
 		SELECT c.*, u.username
@@ -39,7 +37,6 @@ export async function load({ params, cookies }) {
 		[id]
 	);
 
-	// VOTE CHECK
 	let hasVoted = false;
 
 	if (user?.id) {
@@ -63,9 +60,6 @@ export async function load({ params, cookies }) {
 	};
 }
 
-// =====================
-// ACTIONS (COMMENT + VOTE SAFE)
-// =====================
 export const actions = {
 	comment: async ({ request, params, cookies }) => {
 		const sessionId = cookies.get('session');
@@ -105,7 +99,6 @@ export const actions = {
 
 		const imageId = Number(params.id);
 
-		// check if already voted
 		const [existing] = await db.execute(
 			`
 			SELECT 1 FROM image_votes
@@ -126,7 +119,6 @@ export const actions = {
 			[user.id, imageId]
 		);
 
-		// +1 votes
 		await db.execute(
 			`
 			UPDATE images
@@ -137,6 +129,49 @@ export const actions = {
 		);
 
 		return { success: true };
-	}, 
-	
+	},
+
+	edit: async ({ request, params, cookies }) => {
+		const sessionId = cookies.get('session');
+		const user = sessionId ? await validateSession(sessionId) : null;
+
+		if (!user) {
+			throw error(401, 'Not logged in');
+		}
+
+		const imageId = Number(params.id);
+
+		const formData = await request.formData();
+		const description = formData.get('description');
+
+		if (!description || description.trim().length === 0) {
+			return fail(400, {
+				error: 'Description cannot be empty'
+			});
+		}
+
+		const [image] = await db.execute(
+			`SELECT author_id FROM images WHERE id = ?`,
+			[imageId]
+		);
+
+		if (!image.length) {
+			throw error(404, 'Image not found');
+		}
+
+		if (image[0].author_id !== user.id) {
+			throw error(403, 'Not allowed');
+		}
+
+		await db.execute(
+			`
+			UPDATE images
+			SET description = ?
+			WHERE id = ?
+			`,
+			[description, imageId]
+		);
+
+		return { success: true };
+	},
 };
