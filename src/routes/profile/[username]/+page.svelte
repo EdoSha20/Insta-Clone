@@ -29,32 +29,34 @@
 				← Back to Home
 			</a>
 
-			<div class="flex gap-3">
+			{#if data.user && data.user.id === data.profileUser.id}
+	<div class="flex gap-3">
 
-				<a
-					href={resolve('/saved')}
-					class="px-4 py-2 bg-[#222] hover:bg-[#333] rounded-xl font-medium transition"
-				>
-					🔖 Saved
-				</a>
+		<a
+			href={resolve('/saved')}
+			class="px-4 py-2 bg-[#222] hover:bg-[#333] rounded-xl font-medium transition"
+		>
+			🔖 Saved
+		</a>
 
-				<a
-					href={resolve('/dashboard')}
-					class="px-4 py-2 bg-[#7B2FBE] hover:bg-[#9333EA] rounded-xl font-medium transition"
-				>
-					📸 Dashboard
-				</a>
+		<a
+			href={resolve('/dashboard')}
+			class="px-4 py-2 bg-[#7B2FBE] hover:bg-[#9333EA] rounded-xl font-medium transition"
+		>
+			📸 Dashboard
+		</a>
 
-				<form method="POST" action={resolve('/logout')}>
-					<button
-						type="submit"
-						class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-xl font-medium transition"
-					>
-						Logout
-					</button>
-				</form>
+		<form method="POST" action={resolve('/logout')}>
+			<button
+				type="submit"
+				class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-xl font-medium transition"
+			>
+				Logout
+			</button>
+		</form>
 
-			</div>
+	</div>
+{/if}
 
 		</div>
 
