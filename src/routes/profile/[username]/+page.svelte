@@ -22,11 +22,10 @@
 		<!-- HEADER -->
 		<div class="flex justify-between items-center mb-6">
 
-		<a	
+			<a
 				href={resolve('/')}
 				class="text-zinc-400 hover:text-white transition"
 			>
-
 				← Back to Home
 			</a>
 
@@ -67,84 +66,93 @@
 				<div class="flex items-center gap-5">
 
 					{#if data.profileUser.avatar}
+						<img
+							src={data.profileUser.avatar}
+							alt={data.profileUser.username}
+							class="w-20 h-20 rounded-2xl object-cover border border-[#333]"
+						/>
+					{:else}
+						<div class="w-20 h-20 rounded-2xl bg-[#7B2FBE] flex items-center justify-center text-3xl font-bold">
+							{data.profileUser.username[0].toUpperCase()}
+						</div>
+					{/if}
 
-	<img
-	src={data.profileUser.avatar}
-	alt={data.profileUser.username}
-	class="w-20 h-20 rounded-2xl object-cover border border-[#333]"
-/>
-{:else}
+					<div>
+						<h1 class="text-3xl font-bold">
+							@{data.profileUser.username}
+						</h1>
 
-	<div class="w-20 h-20 rounded-2xl bg-[#7B2FBE] flex items-center justify-center text-3xl font-bold">
-		{data.profileUser.username[0].toUpperCase()}
-	</div>
+						{#if data.user && data.user.id === data.profileUser.id}
+
+	<form method="POST" enctype="multipart/form-data" action="?/avatar" class="mt-3">
+
+		<input
+			type="file"
+			name="avatar"
+			accept="image/*"
+			class="text-xs text-zinc-400"
+		/>
+
+		<button
+			type="submit"
+			class="mt-2 px-3 py-1 bg-[#7B2FBE] hover:bg-[#9333EA] rounded-lg text-xs"
+		>
+			Change Profile Picture
+		</button>
+
+	</form>
 
 {/if}
 
-					<div>
+						<p class="text-zinc-500 mt-1">
+							Member since {new Date(data.profileUser.created_at).toLocaleDateString()}
+						</p>
 
-	<h1 class="text-3xl font-bold">
-		@{data.profileUser.username}
-	</h1>
+						<!-- FOLLOW BUTTON -->
+						{#if data.user && data.user.id !== data.profileUser.id}
 
-	<p class="text-zinc-500 mt-1">
-		Member since {new Date(data.profileUser.created_at).toLocaleDateString()}
-	</p>
+						<form method="POST" action="?/follow" class="mt-4">
+	<button
+		class="px-4 py-2 rounded-xl font-medium transition bg-[#7B2FBE] hover:bg-[#9333EA]"
+	>
+		{data.isFollowing ? 'Unfollow' : 'Follow'}
+	</button>
+</form>
 
-	{#if data.user && data.user.id === data.profileUser.id}
+						{/if}
+					</div>
 
-		<form
-			method="POST"
-			action="?/avatar"
-			enctype="multipart/form-data"
-			class="mt-4"
-		>
-
-			<input
-				type="file"
-				name="avatar"
-				accept="image/*"
-				required
-				class="text-sm"
-			/>
-
-			<button
-				type="submit"
-				class="mt-2 px-4 py-2 bg-[#7B2FBE] hover:bg-[#9333EA] rounded-xl text-sm font-medium transition"
-			>
-				Change Avatar
-			</button>
-
-		</form>
-
-	{/if}
-
-</div>
 				</div>
 
 				<div class="flex gap-8">
 
-					<div class="text-center">
-						<p class="text-2xl font-bold">
-							{data.images.length}
-						</p>
-						<p class="text-zinc-500 text-sm">Posts</p>
-					</div>
+	<a href={resolve(`/followers/${data.profileUser.username}`)} class="text-center hover:opacity-80 transition">
+	<p class="text-2xl font-bold">{data.followers}</p>
+	<p class="text-zinc-500 text-sm">Followers</p>
+</a>
 
-					<div class="text-center">
-						<p class="text-2xl font-bold">
-							{totalVotes}
-						</p>
-						<p class="text-zinc-500 text-sm">Likes</p>
-					</div>
+<a href={resolve(`/following/${data.profileUser.username}`)} class="text-center hover:opacity-80 transition">
+	<p class="text-2xl font-bold">{data.following}</p>
+	<p class="text-zinc-500 text-sm">Following</p>
+</a>
 
-				</div>
+	<div class="text-center">
+		<p class="text-2xl font-bold">{data.images.length}</p>
+		<p class="text-zinc-500 text-sm">Posts</p>
+	</div>
+
+	<div class="text-center">
+		<p class="text-2xl font-bold">{totalVotes}</p>
+		<p class="text-zinc-500 text-sm">Likes</p>
+	</div>
+
+</div>
 
 			</div>
 
 		</div>
 
-		<!-- IMAGES GRID (FEHLTE BEI DIR!) -->
+		<!-- IMAGES -->
 		{#if data.images.length === 0}
 
 			<div class="bg-[#111111] border border-[#222222] rounded-2xl p-16 text-center">
@@ -156,8 +164,8 @@
 			<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
 				{#each data.images as img (img.id)}
-<a
-					
+
+					<a
 						href={resolve(`/images/${img.id}`)}
 						class="group bg-[#111111] border border-[#222222] rounded-2xl overflow-hidden hover:border-[#7B2FBE]/50 transition"
 					>
