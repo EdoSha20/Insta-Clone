@@ -10,7 +10,7 @@ export async function load({ cookies }) {
 		throw redirect(303, '/login');
 	}
 
-	const [posts] = await db.execute(
+	const [rows] = await db.execute(
 		`
 		SELECT i.*
 		FROM images i
@@ -22,7 +22,7 @@ export async function load({ cookies }) {
 	);
 
 	return {
-		posts,
+		posts: rows,
 		user
 	};
 }

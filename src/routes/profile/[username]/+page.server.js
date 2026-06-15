@@ -1,6 +1,8 @@
 import pool from '$lib/server/db';
 import { error, fail } from '@sveltejs/kit';
 import { validateSession } from '$lib/server/auth.js';
+import { put } from '@vercel/blob';
+import { BLOB_READ_WRITE_TOKEN } from '$env/static/private';
 
 export async function load({ params, cookies }) {
 	const { username } = params;
@@ -8,7 +10,6 @@ export async function load({ params, cookies }) {
 	const sessionId = cookies.get('session');
 	const user = sessionId ? await validateSession(sessionId) : null;
 
-	// USER
 	const [users] = await pool.execute(
 		'SELECT id, username, email, avatar, created_at FROM users WHERE username = ?',
 		[username]
@@ -20,7 +21,6 @@ export async function load({ params, cookies }) {
 
 	const profileUser = users[0];
 
-	// POSTS
 	const [images] = await pool.execute(
 		`
 		SELECT id, image, description, votes, created_at
@@ -31,13 +31,11 @@ export async function load({ params, cookies }) {
 		[profileUser.id]
 	);
 
-	// FOLLOWERS COUNT
 	const [followersCount] = await pool.execute(
 		`SELECT COUNT(*) AS count FROM follows WHERE following_id = ?`,
 		[profileUser.id]
 	);
 
-	// FOLLOWING COUNT
 	const [followingCount] = await pool.execute(
 		`SELECT COUNT(*) AS count FROM follows WHERE follower_id = ?`,
 		[profileUser.id]
@@ -92,18 +90,48 @@ export const actions = {
 		);
 
 		if (existing.length) {
-			// unfollow
 			await pool.execute(
 				`DELETE FROM follows WHERE follower_id = ? AND following_id = ?`,
 				[user.id, targetId]
 			);
 		} else {
-			// follow
 			await pool.execute(
 				`INSERT INTO follows (follower_id, following_id) VALUES (?, ?)`,
 				[user.id, targetId]
 			);
 		}
+
+		return { success: true };
+	},
+
+	avatar: async ({ cookies, request }) => {
+		const sessionId = cookies.get('session');
+		const user = sessionId ? await validateSession(sessionId) : null;
+
+		if (!user) {
+			throw error(401, 'Not logged in');
+		}
+
+		const formData = await request.formData();
+		const file = formData.get('avatar');
+
+		if (!file || typeof file === 'string' || file.size === 0) {
+			return fail(400, { error: 'Choose an image' });
+		}
+
+		const blob = await put(
+			`avatars/${user.id}-${Date.now()}`,
+			file,
+			{
+				access: 'public',
+				token: BLOB_READ_WRITE_TOKEN
+			}
+		);
+
+		await pool.execute(
+			`UPDATE users SET avatar = ? WHERE id = ?`,
+			[blob.url, user.id]
+		);
 
 		return { success: true };
 	}

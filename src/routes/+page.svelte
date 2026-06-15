@@ -44,9 +44,15 @@
 
 			</div>
 
-			{#if !data.user}
+			<!-- HEADER BUTTONS (FIXED) -->
+			<div class="flex items-center gap-3">
 
-				<div class="flex items-center gap-3">
+				<a href={resolve('/search')}
+					class="px-4 py-2 rounded-[10px] border border-[#222] bg-[#111111] text-[#aaa] hover:text-white hover:border-[#444] transition text-sm">
+					🔍 Search
+				</a>
+
+				{#if !data.user}
 
 					<a href={resolve('/login')}
 						class="px-4 py-2 rounded-[10px] border border-[#222] bg-[#111111] text-[#aaa] hover:text-white hover:border-[#444] transition text-sm">
@@ -58,11 +64,7 @@
 						Register
 					</a>
 
-				</div>
-
-			{:else}
-
-				<div class="flex items-center gap-3">
+				{:else}
 
 					<a href={resolve('/dashboard')}
 						class="px-4 py-2 rounded-[10px] bg-[#7B2FBE] hover:bg-[#9333EA] text-white text-sm font-semibold transition">
@@ -74,9 +76,9 @@
 						Profile
 					</a>
 
-				</div>
+				{/if}
 
-			{/if}
+			</div>
 
 		</div>
 
@@ -84,6 +86,7 @@
 		{#if data.images.length === 0}
 
 			<div class="bg-[#111111] border border-[#222222] rounded-[20px] p-10 text-center">
+
 				<div class="w-14 h-14 mx-auto mb-4 rounded-[14px] bg-[#181818] flex items-center justify-center">
 					📸
 				</div>
@@ -96,10 +99,18 @@
 					Be the first to upload something.
 				</p>
 
-				<a href={resolve('/dashboard')}
-					class="inline-block bg-[#7B2FBE] hover:bg-[#9333EA] px-6 py-3 rounded-[10px] font-semibold transition">
-					Upload Image
-				</a>
+				<div class="flex items-center justify-center gap-3">
+					<a href={resolve('/dashboard')}
+						class="inline-block bg-[#7B2FBE] hover:bg-[#9333EA] px-6 py-3 rounded-[10px] font-semibold transition">
+						Upload Image
+					</a>
+
+					<a href={resolve('/search')}
+						class="inline-block px-4 py-3 rounded-[10px] border border-[#222] bg-[#111111] text-[#aaa] hover:text-white hover:border-[#444] transition text-sm">
+						🔍 Search
+					</a>
+				</div>
+
 			</div>
 
 		{:else}
@@ -129,14 +140,12 @@
 								</p>
 							{/if}
 
-							<!-- FIXED HEADER ROW -->
 							<div class="flex items-center justify-between">
 
 								<span class="text-xs text-[#777]">
 									@{img.author}
 								</span>
 
-								<!-- BUTTONS -->
 								<div class="flex items-center gap-2 flex-wrap justify-end">
 
 									{#if data.user}
