@@ -18,7 +18,7 @@
 				insta<span class="text-[#A855F7]">vibe</span>
 			</span>
 		</div>
-
+ 
 		<h1 class="text-[26px] font-bold tracking-tight leading-tight mb-1">
 			Join the <span class="text-[#A855F7]">vibe.</span>
 		</h1>

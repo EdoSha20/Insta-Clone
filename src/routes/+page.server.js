@@ -28,7 +28,7 @@ export async function load({ cookies }) {
 			ON sp.image_id = i.id
 		GROUP BY i.id
 		ORDER BY i.votes DESC, i.created_at DESC
-		LIMIT 25
+		LIMIT 28
 	`);
 
 	let savedIds = [];
